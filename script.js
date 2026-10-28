@@ -234,6 +234,12 @@ if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 systemDark.addEventListener('change', e => {
   if (!storedTheme()) applyTheme(e.matches ? 'dark' : 'light', false);
 });
+function warmAltBackground() {
+  const img = new Image();
+  img.src = document.documentElement.dataset.theme === 'dark' ? 'img/laxmi-light-bg.png' : 'img/laxmi-dark-bg.png';
+}
+if ('requestIdleCallback' in window) requestIdleCallback(warmAltBackground, { timeout: 4000 });
+else setTimeout(warmAltBackground, 3000);
 
 /* ---------- window manager ---------- */
 const area = $('#desk'), tasks = $('#tasks'), taskEmpty = $('#taskEmpty');

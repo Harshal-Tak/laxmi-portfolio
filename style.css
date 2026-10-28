@@ -16,6 +16,8 @@
   --mute:#7a5585;
   --on-ink:#ffffff;
   --shadow:#33143b;
+  --desk-image:url('img/laxmi-light-bg.png');
+  --desk-scrim:rgba(255,240,248,.16);
   --px-k:#33143b;
   --px-b:#a24fbe;
   --px-s:#f3d9f0;
@@ -40,6 +42,8 @@
   --mute:#c2a3cf;
   --on-ink:#1a0f1f;
   --shadow:#0b0510;
+  --desk-image:url('img/laxmi-dark-bg.png');
+  --desk-scrim:rgba(14,5,20,.4);
   --px-k:#f8e7f6;
   --px-b:#f0a3e0;
   --px-s:#4a2358;
@@ -94,7 +98,12 @@ button{font:inherit;color:inherit}
 .msep{border:0;border-top:2px dashed var(--ink);margin:4px 6px}
 
 /* ---------- desktop ---------- */
-.desk{position:relative;flex:1;min-height:0;overflow:hidden}
+.desk{
+  position:relative;flex:1;min-height:0;overflow:hidden;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--desk-scrim),var(--desk-scrim)),var(--desk-image);
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+}
 .icons{
   position:absolute;inset:0;z-index:1;display:grid;grid-auto-flow:column;grid-template-rows:repeat(auto-fill,112px);grid-auto-columns:104px;
   gap:6px;align-content:start;justify-content:start;
@@ -103,7 +112,7 @@ button{font:inherit;color:inherit}
 .icon{display:flex;flex-direction:column;align-items:center;gap:6px;width:104px;height:112px;padding:6px 2px;background:none;border:0;cursor:pointer;position:relative;touch-action:manipulation}
 .icon .ico{height:48px;display:grid;place-items:end center;transition:transform .08s steps(2)}
 .icon:hover .ico{transform:translateY(-3px)}
-.icon .label{max-width:100%;padding:2px 6px;font-family:var(--f-label);font-size:11px;line-height:1.35;letter-spacing:.04em;text-transform:uppercase;text-align:center}
+.icon .label{max-width:100%;padding:2px 6px;font-family:var(--f-label);font-size:11px;line-height:1.35;letter-spacing:.04em;text-transform:uppercase;text-align:center;text-shadow:0 1px 0 var(--paper),0 -1px 0 var(--paper),1px 0 0 var(--paper),-1px 0 0 var(--paper),0 0 6px var(--paper)}
 .icon:hover .label{background:var(--sky)}
 .icon.sel .label,.icon:focus-visible .label{background:var(--ink);color:var(--on-ink)}
 .icon:focus-visible{outline:0}
