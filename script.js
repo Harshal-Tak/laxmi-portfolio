@@ -198,6 +198,8 @@ function sprite(name, over, px) {
   c.width = w; c.height = hh; c.className = 'sprite'; c.setAttribute('aria-hidden', 'true');
   c.dataset.art = key;
   if (over) c.dataset.over = JSON.stringify(over);
+  c.style.setProperty('--sw', w);
+  c.style.setProperty('--sh', hh);
   c.style.width = (w * px) + 'px'; c.style.height = (hh * px) + 'px';
   paintSprite(c);
   return c;
@@ -606,7 +608,7 @@ function openContact() {
   openWin({ id: 'contact', title: 'Contact', art: 'mail', w: 520, build: rec => {
     rec.body.append(
       h('p', { class: 'c-intro', text: 'Want to work together, or just say hi? Reach out here.' }),
-      CONTENT.contact.map(c => {
+      ...CONTENT.contact.map(c => {
         const b = h('button', { class: 'pbtn', type: 'button', text: 'Copy' });
         b.addEventListener('click', () => copyText(c.value, b));
         return h('div', { class: 'crow' }, h('span', { class: 'clabel', text: c.label }), h('span', { class: 'cval', text: c.value }), b);
@@ -635,7 +637,7 @@ const canDrag = () => !narrow.matches && !coarse.matches;
 
 ENTRIES.forEach(en => {
   const b = h('button', { class: 'icon', type: 'button', 'data-id': en.id, 'aria-label': 'Open ' + en.label },
-    h('span', { class: 'ico' }, sprite(en.art, en.tint ? { y: en.tint } : null, 3)),
+    h('span', { class: 'ico' }, sprite(en.art, en.tint ? { y: en.tint } : null, 4)),
     h('span', { class: 'label', text: en.label }));
   place(b, en.id);
   iconBtns.push(b);
@@ -677,6 +679,38 @@ ENTRIES.forEach(en => {
   });
 });
 area.addEventListener('pointerdown', e => { if (!e.target.closest('.icon') && !e.target.closest('.win')) select(null); });
+
+/* Keep saved icon offsets on-screen when the desktop is resized or rotated. */
+function clampIcon(b) {
+  const id = b.dataset.id, p = pos[id];
+  if (!p || narrow.matches) return;
+  const desk = area.getBoundingClientRect(), r = b.getBoundingClientRect(), pad = 6;
+  let dx = 0, dy = 0;
+  if (r.right > desk.right - pad) dx = desk.right - pad - r.right;
+  else if (r.left < desk.left + pad) dx = desk.left + pad - r.left;
+  if (r.bottom > desk.bottom - pad) dy = desk.bottom - pad - r.bottom;
+  else if (r.top < desk.top + pad) dy = desk.top + pad - r.top;
+  if (dx || dy) { pos[id] = [p[0] + dx, p[1] + dy]; place(b, id); savePos(); }
+}
+function reflowDesktop() {
+  if (narrow.matches) return;
+  iconBtns.forEach(clampIcon);
+}
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    wins.forEach(w => { if (!w.root.hidden && !w.root.classList.contains('animating')) w.fit(); });
+    reflowDesktop();
+  }, 120);
+});
+requestAnimationFrame(reflowDesktop);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
+    wins.forEach(w => { if (!w.root.hidden) w.fit(); });
+    reflowDesktop();
+  });
+}
 
 /* ---------- decor ---------- */
 (function decor() {
